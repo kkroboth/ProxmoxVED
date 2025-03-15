@@ -23,8 +23,29 @@ $STD apt-get install -y \
   ffmpeg
 msg_ok "Installed Dependencies"
 
-msg_info "Installing Hardware Acceleration"
+msg_info "Setting Up Hardware Acceleration"
+
+read -r -p "Do you need the intel-media-va-driver-non-free driver (Debian 12 only)? <y/N> " prompt
+if [[ ${prompt,,} =~ ^(y|yes)$ ]]; then
+  msg_info "Installing Hardware Acceleration (non-free)"
+cat <<EOF >/etc/apt/sources.list.d/non-free.list
+
+deb http://deb.debian.org/debian bookworm non-free non-free-firmware
+deb-src http://deb.debian.org/debian bookworm non-free non-free-firmware
+
+deb http://deb.debian.org/debian-security bookworm-security non-free non-free-firmware
+deb-src http://deb.debian.org/debian-security bookworm-security non-free non-free-firmware
+
+deb http://deb.debian.org/debian bookworm-updates non-free non-free-firmware
+deb-src http://deb.debian.org/debian bookworm-updates non-free non-free-firmware
+EOF
+$STD apt-get update
+$STD apt-get -y install {intel-media-va-driver-non-free,ocl-icd-libopencl1,intel-opencl-icd,vainfo,intel-gpu-tools}
+else
+  msg_info "Installing Hardware Acceleration"
 $STD apt-get -y install {va-driver-all,ocl-icd-libopencl1,intel-opencl-icd,vainfo,intel-gpu-tools}
+fi
+
 if [[ "$CTTYPE" == "0" ]]; then
   chgrp video /dev/dri
   chmod 755 /dev/dri
