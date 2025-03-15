@@ -114,6 +114,11 @@ response=$(curl -s -X 'POST' \
 
 msg_ok "ffmpeg and ffprobe variables have been updated successfully."
 
+# Test video file
+mkdir /root/input
+mkdir /root/output
+wget https://repo.jellyfin.org/test-videos/SDR/AVC/Test%20Jellyfin%201080p%20AVC%203M.mp4 -O /root/input
+
 motd_ssh
 customize
 
