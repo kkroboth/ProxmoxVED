@@ -64,53 +64,14 @@ $STD apt-get install -y aspnetcore-runtime-8.0
 msg_ok "Installed ASP.NET Core Runtime"
 
 msg_info "Setup ${APPLICATION}"
+$STD ln -svf /usr/bin/ffmpeg /usr/local/bin/ffmpeg
+$STD ln -svf /usr/bin/ffprobe /usr/local/bin/ffprobe
 temp_file=$(mktemp)
 wget -q https://fileflows.com/downloads/zip -O $temp_file
 unzip -q -d /opt/fileflows $temp_file
 (cd /opt/fileflows/Server && dotnet FileFlows.Server.dll --systemd install --root true)
 systemctl enable -q --now fileflows.service
 msg_ok "Setup ${APPLICATION}"
-
-msg_info "Setting ffmpeg variables in fileflows"
-msg_info "Waiting for API to become available..."
-while true; do
-  HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:19200/api/system/info" 2>/dev/null || echo "000")
-  if [ "$HTTP_STATUS" -eq 200 ]; then
-    msg_ok "API is now available!"
-    break
-  fi
-  msg_info "API not ready yet (status: $HTTP_STATUS). Retrying in 5 seconds..."
-  sleep 5
-done
-
-ffmpeg_uid=$(curl -s -X 'GET' "http://localhost:19200/api/variable/name/ffmpeg" -H 'accept: application/json' | jq -r '.Uid')
-ffprobe_uid=$(curl -s -X 'GET' "http://localhost:19200/api/variable/name/ffprobe" -H 'accept: application/json' | jq -r '.Uid')
-
-response=$(curl -s -X 'DELETE' \
-  "http://localhost:19200/api/variable" \
-  -H 'accept: */*' \
-  -H 'Content-Type: application/json' \
-  -d "{
-  \"Uids\": [
-    \"$ffmpeg_uid\",
-    \"$ffprobe_uid\"
-  ]
-}")
-
-ffmpeg_path=$(which ffmpeg)
-ffprobe_path=$(which ffprobe)
-
-response=$(curl -s -X 'POST' \
-  "http://localhost:19200/api/variable" \
-  -H 'accept: */*' \
-  -H 'Content-Type: application/json' \
-  -d "{\"Name\":\"ffmpeg\",\"Value\":\"$ffmpeg_path\"}")
-
-response=$(curl -s -X 'POST' \
-  "http://localhost:19200/api/variable" \
-  -H 'accept: */*' \
-  -H 'Content-Type: application/json' \
-  -d "{\"Name\":\"ffprobe\",\"Value\":\"$ffprobe_path\"}")
 
 msg_ok "ffmpeg and ffprobe variables have been updated successfully."
 
