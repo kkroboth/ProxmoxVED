@@ -46,13 +46,13 @@ else
   $STD apt-get -y install {va-driver-all,ocl-icd-libopencl1,intel-opencl-icd,vainfo,intel-gpu-tools}
 fi
 
-if [[ "$CTTYPE" == "0" ]]; then
-  chgrp video /dev/dri
-  chmod 755 /dev/dri
-  chmod 660 /dev/dri/*
-  $STD adduser $(id -u -n) video
-  $STD adduser $(id -u -n) render
-fi
+#if [[ "$CTTYPE" == "0" ]]; then
+#  chgrp video /dev/dri
+#  chmod 755 /dev/dri
+#  chmod 660 /dev/dri/*
+#  $STD adduser $(id -u -n) video
+#  $STD adduser $(id -u -n) render
+#fi
 msg_ok "Installed and Set Up Intel Hardware Acceleration"
 
 msg_info "Installing ASP.NET Core Runtime"
