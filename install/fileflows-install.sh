@@ -64,11 +64,6 @@ unzip -q -d /opt/fileflows $temp_file
 systemctl enable -q --now fileflows.service
 msg_ok "Setup ${APPLICATION}"
 
-# Test video file
-mkdir /root/input
-mkdir /root/output
-wget https://repo.jellyfin.org/test-videos/SDR/AVC/Test%20Jellyfin%201080p%20AVC%203M.mp4 -P /root/input
-
 motd_ssh
 customize
 
