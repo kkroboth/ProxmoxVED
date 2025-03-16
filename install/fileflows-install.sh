@@ -23,8 +23,6 @@ $STD apt-get install -y \
   ffmpeg
 msg_ok "Installed Dependencies"
 
-msg_info "Setting Up Intel Hardware Acceleration"
-
 read -r -p "Do you need the intel-media-va-driver-non-free driver (Debian 12 only)? <y/N> " prompt
 if [[ ${prompt,,} =~ ^(y|yes)$ ]]; then
   msg_info "Installing Hardware Acceleration (non-free)"
