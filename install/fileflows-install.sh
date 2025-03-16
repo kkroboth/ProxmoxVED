@@ -23,12 +23,12 @@ $STD apt-get install -y \
   ffmpeg
 msg_ok "Installed Dependencies"
 
-msg_info "Setting Up Hardware Acceleration"
+msg_info "Setting Up Intel Hardware Acceleration"
 
 read -r -p "Do you need the intel-media-va-driver-non-free driver (Debian 12 only)? <y/N> " prompt
 if [[ ${prompt,,} =~ ^(y|yes)$ ]]; then
   msg_info "Installing Hardware Acceleration (non-free)"
-cat <<EOF >/etc/apt/sources.list.d/non-free.list
+  cat <<EOF >/etc/apt/sources.list.d/non-free.list
 
 deb http://deb.debian.org/debian bookworm non-free non-free-firmware
 deb-src http://deb.debian.org/debian bookworm non-free non-free-firmware
@@ -39,11 +39,11 @@ deb-src http://deb.debian.org/debian-security bookworm-security non-free non-fre
 deb http://deb.debian.org/debian bookworm-updates non-free non-free-firmware
 deb-src http://deb.debian.org/debian bookworm-updates non-free non-free-firmware
 EOF
-$STD apt-get update
-$STD apt-get -y install {intel-media-va-driver-non-free,ocl-icd-libopencl1,intel-opencl-icd,vainfo,intel-gpu-tools}
+  $STD apt-get update
+  $STD apt-get -y install {intel-media-va-driver-non-free,ocl-icd-libopencl1,intel-opencl-icd,vainfo,intel-gpu-tools}
 else
-  msg_info "Installing Hardware Acceleration"
-$STD apt-get -y install {va-driver-all,ocl-icd-libopencl1,intel-opencl-icd,vainfo,intel-gpu-tools}
+  msg_info "Installing Intel Hardware Acceleration"
+  $STD apt-get -y install {va-driver-all,ocl-icd-libopencl1,intel-opencl-icd,vainfo,intel-gpu-tools}
 fi
 
 if [[ "$CTTYPE" == "0" ]]; then
@@ -53,7 +53,7 @@ if [[ "$CTTYPE" == "0" ]]; then
   $STD adduser $(id -u -n) video
   $STD adduser $(id -u -n) render
 fi
-msg_ok "Installed and Set Up Hardware Acceleration"
+msg_ok "Installed and Set Up Intel Hardware Acceleration"
 
 msg_info "Installing ASP.NET Core Runtime"
 wget -q https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
@@ -72,8 +72,6 @@ unzip -q -d /opt/fileflows $temp_file
 (cd /opt/fileflows/Server && dotnet FileFlows.Server.dll --systemd install --root true)
 systemctl enable -q --now fileflows.service
 msg_ok "Setup ${APPLICATION}"
-
-msg_ok "ffmpeg and ffprobe variables have been updated successfully."
 
 # Test video file
 mkdir /root/input
